@@ -66,6 +66,7 @@ class ClienteController extends Controller
                     ->json('Não há cliente para o final da placa informado!', 
                             Response::HTTP_NOT_FOUND);
         }
+        
         return response()->json($cliente, Response::HTTP_OK);
     }
 
