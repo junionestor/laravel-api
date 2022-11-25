@@ -43,7 +43,8 @@ class ClienteController extends Controller
     public function getById($id)
     {
         $cliente = $this->clienteService->getById($id);
-        if (!$cliente){
+        if (!$cliente)
+        {
             return response()
                     ->json('Cliente não encontrado!', 
                             Response::HTTP_NOT_FOUND);

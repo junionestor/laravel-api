@@ -42,7 +42,6 @@ class ClienteService
                     ->model
                     ->where('placa_carro', 'like', '%'.$placa)
                     ->get();
-        
         return $cliente;
     }
 
