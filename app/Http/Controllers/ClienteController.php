@@ -3,14 +3,15 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Cliente;
+use Illuminate\Http\Response;
+use App\Services\ClienteService;
 
 class ClienteController extends Controller
 {
-    protected $model;
-    public function __construct(Cliente $cliente)
+    protected $clienteService;
+    public function __construct(ClienteService $clienteService)
     {
-        $this->model = $cliente;
+        $this->clienteService = $clienteService;
     }
     /**
      * Display a listing of the resource.
@@ -19,17 +20,7 @@ class ClienteController extends Controller
      */
     public function getAll()
     {
-        return response($this->model->all());
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
+        return response($this->clienteService->getAll(), Response::HTTP_OK);
     }
 
     /**
@@ -40,13 +31,7 @@ class ClienteController extends Controller
      */
     public function store(Request $request)
     {
-        try {
-            $this->model->create($request->all());
-            return response('Criado com sucesso');
-        }
-        catch(\Throwable $th){
-            throw $th;
-        }
+        return response($this->clienteService->storeCliente($request), Response::HTTP_CREATED);
     }
 
     /**
@@ -57,11 +42,13 @@ class ClienteController extends Controller
      */
     public function getById($id)
     {
-        $cliente = $this->model->find($id);
+        $cliente = $this->clienteService->getById($id);
         if (!$cliente){
-            return response('Cliente não encontrado!');
+            return response()
+                    ->json('Cliente não encontrado!', 
+                            Response::HTTP_NOT_FOUND);
         }
-        return response($cliente);
+        return response($cliente, Response::HTTP_OK);
     }
 
     /**
@@ -72,29 +59,13 @@ class ClienteController extends Controller
      */
     public function getByPlaca($placa)
     {
-        $cliente = $this
-                    ->model
-                    ->where('placa_carro', 'like', '%'.$placa)
-                    ->get();
+        $cliente = $this->clienteService->getByPlaca($placa);
         if (!$cliente){
-            return response('Cliente não encontrado!');
+            return response()
+                    ->json('Não há cliente para o final da placa informado!', 
+                            Response::HTTP_NOT_FOUND);
         }
-        return response($cliente);
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        $cliente = $this->model->find($id);
-        if(!$cliente){
-            return response('Cliente não encontrado!');
-        }
-        return response($cliente);
+        return response()->json($cliente, Response::HTTP_OK);
     }
 
     /**
@@ -106,17 +77,7 @@ class ClienteController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $cliente = $this->model->find($id);
-        if(!$cliente){
-            return response('Cliente não encontrado!');
-        }
-        try {
-            $dados = $request->all();
-            $cliente->fill($dados)->save();
-            return response('Cliente atualizado!');
-        } catch (\Throwable $th) {
-            throw $th;
-        }
+        return response($this->clienteService->update($request, $id), Response::HTTP_OK);
     }
 
     /**
@@ -127,16 +88,6 @@ class ClienteController extends Controller
      */
     public function destroy($id)
     {
-        $cliente = $this->model->find($id);
-        if(!$cliente){
-            return response('Cliente não encontrado!');
-        }
-
-        try {
-            $cliente->delete();
-            return response('Cliente excluído!');
-        } catch (\Throwable $th) {
-            throw $th;
-        }
+        return response($this->clienteService->destroy($id), Response::HTTP_NO_CONTENT);
     }
 }
