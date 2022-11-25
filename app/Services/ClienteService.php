@@ -33,6 +33,7 @@ class ClienteService
     public function getById($id)
     {
         $cliente = $this->model->find($id);
+        
         return $cliente;
     }
 
